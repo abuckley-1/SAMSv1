@@ -20,7 +20,7 @@ table { width: 100%; border-collapse: collapse; min-width: 1000px; }
 th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; font-size: 0.85rem; color: #666; }
 td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
 
-/* Status Pill Colors */
+/* Status Pill Rules */
 .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; display: inline-block; }
 .planned { background: #dfe6e9; color: #636e72; }
 .open { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
@@ -28,8 +28,9 @@ td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
 .closed { background: #e0f2fe; color: #075985; }
 
 .small-link { color: var(--tram-blue); text-decoration: none; font-weight: bold; border: 1px solid var(--tram-blue); padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; }
-.delete-btn { background: #fff; border: 1px solid #fab1a0; color: #d63031; cursor: pointer; padding: 4px 8px; border-radius: 4px; margin-left: 5px; }
+.delete-btn { background: #fff; border: 1px solid #fab1a0; color: #d63031; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
 
+/* Modal Styles */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
 .modal-content { background: white; padding: 2rem; border-radius: 15px; width: 450px; }
 .form-grid label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; color: var(--tram-blue); margin-top: 10px; }
