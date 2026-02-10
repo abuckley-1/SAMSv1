@@ -1,5 +1,32 @@
 let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
 
+// 1. DYNAMIC STATUS CALCULATOR
+function getLiveStatus(audit) {
+    if (audit.status === 'Closed' || audit.status === 'Cancelled') return audit.status;
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // JS months are 0-11
+
+    if (!audit.date) return 'Planned';
+
+    const [scheduledYear, scheduledMonth] = audit.date.split('-').map(Number);
+
+    // Logic: If the scheduled month/year is in the past
+    if (scheduledYear < currentYear || (scheduledYear === currentYear && scheduledMonth < currentMonth)) {
+        return 'Overdue';
+    } 
+    // Logic: If we are currently in the scheduled month
+    else if (scheduledYear === currentYear && scheduledMonth === currentMonth) {
+        return 'Open';
+    } 
+    // Logic: Future audits
+    else {
+        return 'Planned';
+    }
+}
+
+// 2. DASHBOARD RENDER
 function renderSchedule() {
     const body = document.getElementById('schedule-body');
     if (!body) return;
@@ -7,85 +34,71 @@ function renderSchedule() {
     if (audits.length === 0) {
         body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No audits scheduled.</td></tr>';
     } else {
-        body.innerHTML = audits.map((a, index) => `
-            <tr>
-                <td>${a.ref}</td>
-                <td><strong>${a.title}</strong></td>
-                <td>${a.period || '---'}</td>
-                <td>${formatMonth(a.date)}</td>
-                <td>${a.dept || ''} / ${a.func || ''}</td>
-                <td>${a.email || ''}</td>
-                <td><span class="status-pill ${a.status.toLowerCase()}">${a.status}</span></td>
-                <td>
-                    <div style="display:flex; gap:8px;">
-                        <a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a>
-                        <button onclick="deleteAudit(${index})" class="delete-btn">🗑️</button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
+        body.innerHTML = audits.map((a, index) => {
+            // Calculate live status on the fly
+            const liveStatus = getLiveStatus(a);
+            
+            return `
+                <tr>
+                    <td>${a.ref}</td>
+                    <td><strong>${a.title}</strong></td>
+                    <td>${a.period || '---'}</td>
+                    <td>${formatMonth(a.date)}</td>
+                    <td>${a.dept || ''} / ${a.func || ''}</td>
+                    <td>${a.email || ''}</td>
+                    <td><span class="status-pill ${liveStatus.toLowerCase()}">${liveStatus}</span></td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a>
+                            <button onclick="deleteAudit(${index})" class="delete-btn">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
     updateStats();
 }
 
-// Formats "2026-02" into "February 2026"
 function formatMonth(dateStr) {
     if (!dateStr) return 'TBC';
-    try {
-        const [year, month] = dateStr.split('-');
-        const date = new Date(year, month - 1);
-        return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-    } catch (e) {
-        return dateStr; // Fallback if format is weird
-    }
+    const [year, month] = dateStr.split('-');
+    const date = new Date(year, month - 1);
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
 }
 
 function createAudit() {
-    try {
-        const titleVal = document.getElementById('title').value.toUpperCase();
-        const periodVal = document.getElementById('period').value;
-        const monthVal = document.getElementById('auditMonth').value; 
-        const emailVal = document.getElementById('email').value;
-        const deptVal = document.getElementById('dept').value;
-        const funcVal = document.getElementById('function').value;
-        const typeVal = document.getElementById('type').value;
+    const titleVal = document.getElementById('title').value.toUpperCase();
+    const periodVal = document.getElementById('period').value;
+    const monthVal = document.getElementById('auditMonth').value; 
+    const emailVal = document.getElementById('email').value;
+    const deptVal = document.getElementById('dept').value;
+    const funcVal = document.getElementById('function').value;
+    const typeVal = document.getElementById('type').value;
 
-        if (!titleVal || !periodVal) {
-            alert("Please provide at least an Audit Title and Reporting Period.");
-            return;
-        }
-
-        const ref = `ST0096/${titleVal}/${periodVal}`;
-
-        const newAudit = {
-            ref: ref,
-            title: titleVal,
-            period: periodVal,
-            date: monthVal,
-            email: emailVal,
-            dept: deptVal,
-            func: funcVal,
-            type: typeVal,
-            status: 'Planned',
-            responses: {},
-            lastUpdated: new Date().toISOString()
-        };
-
-        audits.push(newAudit);
-        localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
-        
-        document.getElementById('schedule-modal').style.display = 'none';
-        renderSchedule();
-        
-        // Reset inputs
-        ['title', 'period', 'auditMonth', 'email', 'dept', 'function'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.value = '';
-        });
-    } catch (err) {
-        console.error("Audit Creation Failed:", err);
-        alert("An error occurred. Please check all fields are filled.");
+    if (!titleVal || !periodVal) {
+        alert("Title and Period are required.");
+        return;
     }
+
+    const newAudit = {
+        ref: `ST0096/${titleVal}/${periodVal}`,
+        title: titleVal,
+        period: periodVal,
+        date: monthVal,
+        email: emailVal,
+        dept: deptVal,
+        func: funcVal,
+        type: typeVal,
+        status: 'Planned', // Initial state, renderer will adjust to 'Open' if date matches
+        responses: {},
+        lastUpdated: new Date().toISOString()
+    };
+
+    audits.push(newAudit);
+    localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
+    document.getElementById('schedule-modal').style.display = 'none';
+    renderSchedule();
 }
 
 function deleteAudit(index) {
@@ -98,10 +111,13 @@ function deleteAudit(index) {
 
 function updateStats() {
     const totalEl = document.getElementById('count-total');
-    if(totalEl) totalEl.innerText = audits.length;
+    if(!totalEl) return;
     
-    const plannedEl = document.getElementById('count-planned');
-    if(plannedEl) plannedEl.innerText = audits.filter(a => a.status === 'Planned').length;
+    // Stats also use the live calculation
+    totalEl.innerText = audits.length;
+    document.getElementById('count-planned').innerText = audits.filter(a => getLiveStatus(a) === 'Planned').length;
+    document.getElementById('count-open').innerText = audits.filter(a => getLiveStatus(a) === 'Open').length;
+    document.getElementById('count-closed').innerText = audits.filter(a => a.status === 'Closed').length;
 }
 
 window.onload = renderSchedule;
