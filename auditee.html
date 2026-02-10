@@ -3,87 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMS v1 | Auditee Response Portal</title>
+    <title>Audit Submission | SAMS v1</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="auditee-body" onload="loadAuditeeTask()">
-    <header class="auditee-nav">
+<body>
+    <header>
         <div class="header-container">
-            <div class="logo">SUPERTRAM <span class="sub-logo">Compliance Portal</span></div>
-            <div id="task-ref" class="ref-tag">ST0096/LOADING/2026</div>
+            <div class="logo">SUPERTRAM <span class="sub-logo">Auditee Portal</span></div>
+            <a href="index.html" class="btn secondary-btn" style="text-decoration: none; font-size: 0.8rem;">← Back to Dashboard</a>
         </div>
     </header>
 
     <main>
-        <div id="save-msg" class="save-banner" style="display:none;">✔️ Progress Auto-Saved to Device</div>
-        
-        <section class="instruction-card">
-            <h3>Action Required: Internal Audit Response</h3>
-            <p>Please complete all sections. Use the <strong>"Attach Evidence"</strong> button to provide SharePoint links, document references, or photo IDs for the auditor to verify.</p>
-        </section>
+        <div class="table-container" style="padding: 2rem; max-width: 800px; margin: auto; background: white; border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="audit-title" style="color: var(--tram-blue); margin: 0;">Loading Audit...</h2>
+                <span id="header-status" class="status-pill">---</span>
+            </div>
+            <p style="color: #666; margin-top: 5px;">Reference Number: <span id="audit-ref" style="font-weight: bold;">---</span></p>
+            
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
 
-        <form id="questionnaire-form">
-            <div id="mandatory-section">
-                <h2 class="section-title">Step 1: Core Compliance</h2>
+            <div id="form-container">
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9rem;">Audit Findings & Comments</label>
+                    <textarea id="audit-comments" rows="12" style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit; box-sizing: border-box; resize: vertical;" placeholder="Describe the audit evidence, observations, and any issues found..."></textarea>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9rem;">Final Outcome</label>
+                    <select id="audit-outcome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fff;">
+                        <option value="Compliant">✅ Compliant</option>
+                        <option value="Non-Compliant">❌ Non-Compliant</option>
+                        <option value="Observation">⚠️ Observation Only</option>
+                    </select>
                 </div>
 
-            <div id="ai-section">
-                <h2 class="section-title">Step 2: Process Specific Assessment</h2>
-                </div>
-
-            <div class="submission-footer">
-                <button type="button" onclick="saveProgressManual()" class="btn secondary-btn">Save Progress</button>
-                <button type="button" onclick="submitTask()" class="btn primary-btn">Finalise & Submit to Auditor</button>
-            </div>
-        </form>
-    </main>
-
-    <div id="evidence-modal" class="modal">
-        <div class="modal-content">
-            <h3>Attach Evidence Sample</h3>
-            <div class="form-grid">
-                <label>Evidence Category:</label>
-                <select id="ev-type">
-                    <option value="Link">SharePoint / Cloud Link</option>
-                    <option value="Doc">Procedure Reference (e.g. SOP-01)</option>
-                    <option value="Photo">Photograph ID</option>
-                    <option value="Record">Training / Maintenance Log</option>
-                </select>
-                <label>Reference or URL:</label>
-                <input type="text" id="ev-ref" placeholder="Paste link or type Doc ID here...">
-                <label>Notes for Auditor:</label>
-                <textarea id="ev-desc" style="height:60px;"></textarea>
-            </div>
-            <div class="modal-btns">
-                <button onclick="closeEvidence()" class="btn secondary-btn">Cancel</button>
-                <button onclick="confirmEvidence()" class="btn purple-btn">Attach Evidence</button>
+                <button onclick="submitAudit()" class="btn primary-btn" style="width: 100%; padding: 18px; font-size: 1rem; letter-spacing: 1px;">SUBMIT COMPLETED AUDIT</button>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script src="app.js"></script>
     <script>
-        // Local UI helper for Modal
-        let currentTargetId = null;
-        function openEvidence(id) {
-            currentTargetId = id;
-            document.getElementById('evidence-modal').style.display = 'flex';
-        }
-        function closeEvidence() {
-            document.getElementById('evidence-modal').style.display = 'none';
-        }
-        function confirmEvidence() {
-            const ref = document.getElementById('ev-ref').value;
-            const desc = document.getElementById('ev-desc').value;
-            const type = document.getElementById('ev-type').value;
-            if(!ref) return alert("Please provide a reference or link.");
+        // 1. DATA SETUP
+        const params = new URLSearchParams(window.location.search);
+        const auditRef = params.get('ref');
+        let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
+        
+        // Find this specific audit in your local database
+        const auditIndex = audits.findIndex(a => a.ref === auditRef);
+        const audit = audits[auditIndex];
+
+        // 2. PAGE LOAD LOGIC
+        if (audit) {
+            document.getElementById('audit-title').innerText = audit.title;
+            document.getElementById('audit-ref').innerText = audit.ref;
             
-            const noteArea = document.getElementById(`ans-${currentTargetId}`);
-            const timestamp = new Date().toLocaleTimeString();
-            noteArea.value += `\n[EVIDENCE ${timestamp}] ${type}: ${ref} (${desc})`;
-            
-            closeEvidence();
-            autoSaveAuditee();
+            // Set the status pill color and text
+            const statusEl = document.getElementById('header-status');
+            statusEl.innerText = audit.status;
+            statusEl.classList.add(audit.status.toLowerCase());
+
+            // If they already typed something before, show it
+            if (audit.responses && audit.responses.comments) {
+                document.getElementById('audit-comments').value = audit.responses.comments;
+                document.getElementById('audit-outcome').value = audit.responses.outcome;
+            }
+        } else {
+            alert("Audit record not found. Returning to dashboard.");
+            window.location.href = 'index.html';
+        }
+
+        // 3. SUBMISSION LOGIC
+        function submitAudit() {
+            const comments = document.getElementById('audit-comments').value;
+            const outcome = document.getElementById('audit-outcome').value;
+
+            if (comments.trim().length < 5) {
+                alert("Please provide detailed findings before submitting.");
+                return;
+            }
+
+            if (confirm("Confirm: Are you ready to submit this audit? This will close the record.")) {
+                // Update the data object
+                audits[auditIndex].responses = {
+                    comments: comments,
+                    outcome: outcome,
+                    submittedAt: new Date().toISOString()
+                };
+                
+                // Change status to CLOSED
+                audits[auditIndex].status = 'Closed';
+
+                // Save to local storage (Auto-Sync)
+                localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
+                
+                alert("Audit ST0096 submitted and closed.");
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>
