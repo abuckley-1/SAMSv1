@@ -1,7 +1,7 @@
-// --- DATABASE INITIALIZATION ---
+// Load data from browser storage
 let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
 
-// --- DASHBOARD RENDER ---
+// 1. Draw the table rows
 function renderSchedule() {
     const body = document.getElementById('schedule-body');
     if (!body) return;
@@ -19,7 +19,7 @@ function renderSchedule() {
                 <td>${a.email}</td>
                 <td><span class="status-pill ${a.status.toLowerCase()}">${a.status}</span></td>
                 <td>
-                    <div style="display:flex; gap:10px;">
+                    <div style="display:flex; gap:8px;">
                         <a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a>
                         <button onclick="deleteAudit(${index})" class="delete-btn">🗑️</button>
                     </div>
@@ -30,18 +30,19 @@ function renderSchedule() {
     updateStats();
 }
 
-// --- CORE FUNCTIONS ---
+// 2. Capture form data and save
 function createAudit() {
     const titleVal = document.getElementById('title').value.toUpperCase();
-    const periodVal = document.getElementById('period').value; // e.g. 2602
+    const periodVal = document.getElementById('period').value;
     const dateVal = document.getElementById('auditDate').value;
     const emailVal = document.getElementById('email').value;
     const deptVal = document.getElementById('dept').value;
     const funcVal = document.getElementById('function').value;
     const typeVal = document.getElementById('type').value;
 
+    // Check mandatory fields
     if (!titleVal || !periodVal || !emailVal) {
-        alert("Please enter Title, Reporting Period (YYPP), and Auditee Email.");
+        alert("Error: Title, Reporting Period (YYPP), and Email are required.");
         return;
     }
 
@@ -65,17 +66,18 @@ function createAudit() {
     audits.push(newAudit);
     localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
     
+    // UI Cleanup
     document.getElementById('schedule-modal').style.display = 'none';
     renderSchedule();
     
-    // Reset form
+    // Reset Form
     ['title', 'period', 'auditDate', 'email', 'dept', 'function'].forEach(id => {
         document.getElementById(id).value = '';
     });
 }
 
 function deleteAudit(index) {
-    if(confirm("Are you sure you want to delete this audit entry?")) {
+    if(confirm("Confirm: Delete this audit record?")) {
         audits.splice(index, 1);
         localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
         renderSchedule();
@@ -91,4 +93,9 @@ function updateStats() {
     document.getElementById('count-closed').innerText = audits.filter(a => a.status === 'Closed').length;
 }
 
+function syncToCloud() {
+    alert("SAMS Cloud Sync: Data is currently saved to your local browser. GitHub Cloud sync requires a PAT token.");
+}
+
+// Start on load
 window.onload = renderSchedule;
