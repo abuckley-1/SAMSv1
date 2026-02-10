@@ -29,13 +29,10 @@
                 <thead>
                     <tr>
                         <th>Ref No.</th>
-                        <th>Title</th>
-                        <th>Period</th>
+                        <th>Audit Details</th>
                         <th>Scheduled</th>
-                        <th>Dept / Function</th>
-                        <th>Auditee Email</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th>Audit Actions & Workflow</th>
                     </tr>
                 </thead>
                 <tbody id="schedule-body"></tbody>
@@ -47,29 +44,19 @@
         <div class="modal-content">
             <h3>Schedule New Audit</h3>
             <div class="form-grid">
-                <label>Audit Title (e.g. WASTE)</label>
-                <input type="text" id="title" placeholder="Enter Title">
-                
-                <label>Reporting Period (YYPP - e.g. 2602)</label>
-                <input type="text" id="period" placeholder="e.g. 2602">
-                
-                <label>Audit Month & Year</label>
+                <label>Audit Title</label>
+                <input type="text" id="title" placeholder="e.g. WASTE">
+                <label>Period (YYPP)</label>
+                <input type="text" id="period" placeholder="2602">
+                <label>Month & Year</label>
                 <input type="month" id="auditMonth">
-                
                 <label>Auditee Email</label>
-                <input type="email" id="email" placeholder="name@supertram.com">
-                
-                <label>Department</label>
-                <input type="text" id="dept" placeholder="e.g. SHEQ">
-                
-                <label>Function</label>
-                <input type="text" id="function" placeholder="e.g. SLT">
-                
-                <label>Type</label>
-                <select id="type">
-                    <option value="Internal">Internal Audit</option>
-                    <option value="External">External Audit</option>
-                </select>
+                <input type="email" id="email" placeholder="auditee@supertram.com">
+                <label>Dept / Function</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="dept" placeholder="Dept">
+                    <input type="text" id="function" placeholder="Func">
+                </div>
             </div>
             <div class="modal-btns">
                 <button onclick="document.getElementById('schedule-modal').style.display='none'" class="btn secondary-btn">Cancel</button>
