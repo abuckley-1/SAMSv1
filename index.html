@@ -3,70 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMS v1 | Supertram SHEQ Portal</title>
+    <title>SAMS v1 | Supertram Audit Universe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">SUPERTRAM <span class="sub-logo">Audit Management</span></div>
-            <nav>
-                <ul>
-                    <li><a href="index.html" class="active">Dashboard</a></li>
-                    <li><a href="audit.html">New Audit</a></li>
-                    <li><a href="reports.html">Reports</a></li>
-                    <li><a href="legislation.html">Legislation</a></li>
-                </ul>
-            </nav>
+            <div class="logo">SUPERTRAM <span class="sub-logo">Audit Universe</span></div>
+            <div class="header-actions">
+                <button onclick="syncToCloud()" class="btn purple-btn">☁️ Sync to GitHub</button>
+                <button onclick="document.getElementById('schedule-modal').style.display='flex'" class="btn primary-btn">+ Schedule Audit</button>
+            </div>
         </div>
     </header>
 
     <main>
-        <section class="hero">
-            <h1>2026 SHEQ Audit Universe</h1>
-            <p>Integrated Compliance: ISO 9001, 14001, 45001 & RM3 Rail Maturity</p>
+        <section class="stats-bar">
+            <div class="stat">Total: <span id="count-total">0</span></div>
+            <div class="stat">Planned: <span id="count-planned">0</span></div>
+            <div class="stat">Open: <span id="count-open">0</span></div>
+            <div class="stat">Closed: <span id="count-closed">0</span></div>
         </section>
 
-        <section class="schedule-section">
-            <h2>Annual Audit Schedule</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Audit Scope</th>
-                            <th>Standard</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>February</td>
-                            <td>Nunnery Depot - Infrastructure</td>
-                            <td>ISO 45001 / RM3</td>
-                            <td><span class="badge pending">Scheduled</span></td>
-                            <td><a href="audit.html" class="small-btn">Start</a></td>
-                        </tr>
-                        <tr>
-                            <td>April</td>
-                            <td>Rolling Stock Maintenance</td>
-                            <td>ISO 9001</td>
-                            <td><span class="badge">Planned</span></td>
-                            <td><a href="#" class="small-btn disabled">Notify</a></td>
-                        </tr>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ref No.</th>
+                        <th>Audit Title</th>
+                        <th>Dept / Function</th>
+                        <th>Auditee (Email)</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-body">
                     </tbody>
-                </table>
-            </div>
-        </section>
-
-        <div class="dashboard-grid">
-            <div class="card rm3-card">
-                <h3>RM3 Rail Maturity</h3>
-                <div class="maturity-badge">Level 3: Standardised</div>
-                <p>Targeting Level 4 (Predictable) by Q4 2026</p>
-            </div>
+            </table>
         </div>
     </main>
+
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <h3>Schedule New Audit</h3>
+            <div class="form-grid">
+                <input type="text" id="title" placeholder="Audit Title (e.g., WASTE)">
+                <input type="email" id="email" placeholder="Auditee Email">
+                <input type="text" id="dept" placeholder="Department">
+                <input type="text" id="function" placeholder="Function">
+                <select id="type">
+                    <option value="Internal">Internal Audit</option>
+                    <option value="External">External Audit</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button onclick="document.getElementById('schedule-modal').style.display='none'" class="btn secondary-btn">Cancel</button>
+                <button onclick="createAudit()" class="btn primary-btn">Confirm & Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
