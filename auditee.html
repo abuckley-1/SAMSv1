@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS v1 | Auditee Response Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auditee-hero { background: linear-gradient(135deg, #004c94, #9b26b6); color: white; padding: 2rem; border-radius: 0 0 20px 20px; margin-bottom: 2rem; }
+        .progress-container { position: sticky; top: 0; background: white; padding: 10px; z-index: 100; border-bottom: 2px solid #eee; }
+        .save-banner { background: #fff3cd; padding: 10px; text-align: center; font-size: 0.9rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
+    </style>
+</head>
+<body onload="loadAuditeeTask()">
+    <div class="auditee-hero">
+        <h1>Supertram Compliance Task</h1>
+        <p id="task-ref">Loading Audit Reference...</p>
+    </div>
+
+    <main>
+        <div id="save-msg" class="save-banner">Changes saved locally to your device.</div>
+        
+        <section class="card">
+            <h3>Instructions</h3>
+            <p>Please provide honest, evidence-based answers. You can save your progress at any time. Once submitted, your auditor will review and request follow-up evidence if required.</p>
+        </section>
+
+        <form id="questionnaire-form">
+            <div id="mandatory-section">
+                <h3>Mandatory Compliance Questions</h3>
+                </div>
+
+            <div id="ai-section">
+                <h3>Process Specific Questions</h3>
+                </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 10px;">
+                <button type="button" onclick="saveProgress()" class="btn secondary-btn">Save Progress</button>
+                <button type="button" onclick="submitTask()" class="btn primary-btn">Submit to Auditor</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        let currentAudit = null;
+
+        function loadAuditeeTask() {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('ref');
+            const data = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
+            currentAudit = data.find(a => a.ref === ref);
+
+            if (!currentAudit) {
+                document.body.innerHTML = "<h1>Error: Audit link invalid or expired.</h1>";
+                return;
+            }
+
+            document.getElementById('task-ref').innerText = currentAudit.ref;
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            // Mandatory Questions
+            const mandatory = [
+                { id: 'M1', q: "Does the business have a procedure and or policy for this specific process?", crit: "ISO 9001/14001/45001" },
+                { id: 'M2', q: "Does the business have a Risk Assessment for this specific process?", crit: "ISO 45001 / RM3" },
+                { id: 'M3', q: "Do you feel the relevant staff have received suitable information, instruction and training?", crit: "Competence Management" }
+            ];
+
+            const manContainer = document.getElementById('mandatory-section');
+            manContainer.innerHTML += mandatory.map(q => `
+                <div class="audit-item">
+                    <small>${q.crit}</small>
+                    <p><strong>${q.q}</strong></p>
+                    <textarea id="ans-${q.id}" oninput="autoSave()">${currentAudit.responses[q.id] || ''}</textarea>
+                </div>
+            `).join('');
+
+            // AI/Process Specific (Generating 5 per standard as requested)
+            const aiContainer = document.getElementById('ai-section');
+            const standards = ['ISO9001', 'ISO14001', 'ISO45001', 'RM3'];
+            
+            standards.forEach(std => {
+                aiContainer.innerHTML += `<h4 style="color:var(--tram-blue); border-bottom:1px solid #ddd; margin-top:20px;">${std} Assessment</h4>`;
+                for(let i=1; i<=5; i++) {
+                    const qID = `${std}-${i}`;
+                    aiContainer.innerHTML += `
+                        <div class="audit-item">
+                            <small>${std} Criteria</small>
+                            <p>How does the ${currentAudit.title} process ensure compliance with ${std} sub-clause ${i}?</p>
+                            <textarea id="ans-${qID}" oninput="autoSave()">${currentAudit.responses[qID] || ''}</textarea>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function autoSave() {
+            const inputs = document.querySelectorAll('textarea');
+            inputs.forEach(input => {
+                const id = input.id.replace('ans-', '');
+                currentAudit.responses[id] = input.value;
+            });
+            
+            const data = JSON.parse(localStorage.getItem('supertram_audit_data'));
+            const idx = data.findIndex(a => a.ref === currentAudit.ref);
+            data[idx] = currentAudit;
+            localStorage.setItem('supertram_audit_data', JSON.stringify(data));
+            
+            document.getElementById('save-msg').style.display = 'block';
+            setTimeout(() => { document.getElementById('save-msg').style.display = 'none'; }, 2000);
+        }
+
+        function submitTask() {
+            alert("Questionnaire submitted. The status of ST0096 has been updated for the auditor.");
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
