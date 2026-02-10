@@ -2,40 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMS v1 | Conduct Audit</title>
+    <title>SAMS v1 | Field Audit Tool</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">SUPERTRAM <span class="sub-logo">Audit Tool</span></div>
+            <div class="logo">SUPERTRAM <span class="sub-logo">Field Tool</span></div>
             <nav>
                 <ul>
                     <li><a href="index.html">Dashboard</a></li>
-                    <li><a href="audit.html" class="active">New Audit</a></li>
-                    <li><a href="legislation.html">Legislation</a></li>
+                    <li><a href="audit.html" class="active">Conduct Audit</a></li>
+                    <li><a href="reports.html">Reports</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <main>
-        <div class="audit-header">
-            <h2>Audit Checklist</h2>
-            <select id="auditType" onchange="updateChecklist()">
-                <option value="rm3">RM3 (Rail Maturity Model)</option>
-                <option value="iso45001">ISO 45001 (Health & Safety)</option>
-                <option value="iso14001">ISO 14001 (Environment)</option>
-                <option value="iso9001">ISO 9001 (Quality)</option>
-            </select>
+        <div class="audit-controls">
+            <h2>Audit Execution</h2>
+            <div class="selector-group">
+                <label>Select Audit Type:</label>
+                <select id="auditType" onchange="updateChecklist()">
+                    <option value="rm3">RM3 Rail Maturity</option>
+                    <option value="iso45001">ISO 45001 (Health & Safety)</option>
+                    <option value="iso14001">ISO 14001 (Environment)</option>
+                    <option value="iso9001">ISO 9001 (Quality)</option>
+                </select>
+            </div>
         </div>
 
-        <div id="checklist-container" class="checklist-container">
-            </div>
+        <div id="checklist-container"></div>
 
         <div class="audit-actions">
-            <button class="btn primary-btn" onclick="submitAudit()">Finalise Audit</button>
+            <button class="btn secondary-btn" onclick="saveAuditProgress()">Save Progress</button>
+            <a href="reports.html" class="btn primary-btn">Generate Comprehensive Report</a>
         </div>
     </main>
     <script src="script.js"></script>
