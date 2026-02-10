@@ -3,103 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Submission | SAMS v1</title>
+    <title>Auditee Portal | SAMS</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <header>
-        <div class="header-container">
-            <div class="logo">SUPERTRAM <span class="sub-logo">Auditee Portal</span></div>
-            <a href="index.html" class="btn secondary-btn" style="text-decoration: none; font-size: 0.8rem;">← Back to Dashboard</a>
+<body style="background: #eef2f5;">
+    <div class="form-card">
+        <header style="border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+            <h1 id="form-title">Audit Questionnaire</h1>
+            <p id="expiry-notice" style="color: #d63031; font-weight: bold;"></p>
+        </header>
+
+        <div id="questions-area"></div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+            <p style="font-size: 0.8rem; color: #666;">Progress saves automatically as you type.</p>
+            <button onclick="finalSubmit()" class="btn primary-btn" style="width: 100%;">Final Submission to Audit Team</button>
         </div>
-    </header>
-
-    <main>
-        <div class="table-container" style="padding: 2rem; max-width: 800px; margin: auto; background: white; border-radius: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 id="audit-title" style="color: var(--tram-blue); margin: 0;">Loading Audit...</h2>
-                <span id="header-status" class="status-pill">---</span>
-            </div>
-            <p style="color: #666; margin-top: 5px;">Reference Number: <span id="audit-ref" style="font-weight: bold;">---</span></p>
-            
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
-
-            <div id="form-container">
-                <div style="margin-bottom: 20px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9rem;">Audit Findings & Comments</label>
-                    <textarea id="audit-comments" rows="12" style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit; box-sizing: border-box; resize: vertical;" placeholder="Describe the audit evidence, observations, and any issues found..."></textarea>
-                </div>
-                
-                <div style="margin-bottom: 30px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9rem;">Final Outcome</label>
-                    <select id="audit-outcome" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fff;">
-                        <option value="Compliant">✅ Compliant</option>
-                        <option value="Non-Compliant">❌ Non-Compliant</option>
-                        <option value="Observation">⚠️ Observation Only</option>
-                    </select>
-                </div>
-
-                <button onclick="submitAudit()" class="btn primary-btn" style="width: 100%; padding: 18px; font-size: 1rem; letter-spacing: 1px;">SUBMIT COMPLETED AUDIT</button>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // 1. DATA SETUP
         const params = new URLSearchParams(window.location.search);
-        const auditRef = params.get('ref');
+        const ref = params.get('ref');
+        const type = params.get('type');
         let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
-        
-        // Find this specific audit in your local database
-        const auditIndex = audits.findIndex(a => a.ref === auditRef);
-        const audit = audits[auditIndex];
+        let audit = audits.find(a => a.ref === ref);
 
-        // 2. PAGE LOAD LOGIC
-        if (audit) {
-            document.getElementById('audit-title').innerText = audit.title;
-            document.getElementById('audit-ref').innerText = audit.ref;
-            
-            // Set the status pill color and text
-            const statusEl = document.getElementById('header-status');
-            statusEl.innerText = audit.status;
-            statusEl.classList.add(audit.status.toLowerCase());
-
-            // If they already typed something before, show it
-            if (audit.responses && audit.responses.comments) {
-                document.getElementById('audit-comments').value = audit.responses.comments;
-                document.getElementById('audit-outcome').value = audit.responses.outcome;
-            }
+        if (!audit || !audit.workflow[type]) {
+            document.body.innerHTML = "<h1>Link Invalid or Not Yet Issued.</h1>";
         } else {
-            alert("Audit record not found. Returning to dashboard.");
-            window.location.href = 'index.html';
+            checkExpiry();
+            loadQuestions();
         }
 
-        // 3. SUBMISSION LOGIC
-        function submitAudit() {
-            const comments = document.getElementById('audit-comments').value;
-            const outcome = document.getElementById('audit-outcome').value;
-
-            if (comments.trim().length < 5) {
-                alert("Please provide detailed findings before submitting.");
-                return;
+        function checkExpiry() {
+            const expiry = new Date(audit.workflow[type].expiryDate);
+            if (new Date() > expiry) {
+                document.getElementById('form-container').innerHTML = "<h2>This link expired after the 2-week window.</h2>";
+            } else {
+                document.getElementById('expiry-notice').innerText = "Valid until: " + expiry.toLocaleDateString();
             }
+        }
 
-            if (confirm("Confirm: Are you ready to submit this audit? This will close the record.")) {
-                // Update the data object
-                audits[auditIndex].responses = {
-                    comments: comments,
-                    outcome: outcome,
-                    submittedAt: new Date().toISOString()
-                };
-                
-                // Change status to CLOSED
-                audits[auditIndex].status = 'Closed';
+        function loadQuestions() {
+            const area = document.getElementById('questions-area');
+            // Initial is fixed, Followup is bespoke (Sample logic here)
+            const questions = type === 'initial' ? ["What is the process?", "Identify risks"] : ["Follow-up Item 1", "Evidence Check"];
+            
+            area.innerHTML = questions.map((q, i) => `
+                <div class="q-box" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">${i+1}. ${q}</label>
+                    <textarea oninput="autoSave(${i}, this.value)" style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd;">${audit.workflow[type].responses[i] || ''}</textarea>
+                    ${type === 'followup' ? `<div style="margin-top:10px;"><input type="file" multiple> <small>(Max 3 files)</small></div>` : ''}
+                </div>
+            `).join('');
+        }
 
-                // Save to local storage (Auto-Sync)
+        function autoSave(index, val) {
+            audit.workflow[type].responses[index] = val;
+            localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
+        }
+
+        function finalSubmit() {
+            if(confirm("Submit final report? You won't be able to edit after this.")) {
+                audit.workflow[type].status = 'Completed';
                 localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
-                
-                alert("Audit ST0096 submitted and closed.");
-                window.location.href = 'index.html';
+                alert("Audit Team Alerted: healthandsafety@supertram.com");
+                window.location.href = "index.html";
             }
         }
     </script>
