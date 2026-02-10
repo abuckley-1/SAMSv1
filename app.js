@@ -128,3 +128,24 @@ function renderSchedule() {
 }
 
 window.onload = () => { if(document.getElementById('schedule-body')) renderSchedule(); };
+
+function renderAuditeeQuestions(audit) {
+    const manContainer = document.getElementById('mandatory-section');
+    const aiContainer = document.getElementById('ai-section');
+
+    const mandatory = [
+        { id: 'M1', q: "Does the business have a procedure and or policy for this specific process?" },
+        { id: 'M2', q: "Does the business have a Risk Assessment for this specific process?" },
+        { id: 'M3', q: "Do you feel the relevant staff have received suitable information, instruction and training?" }
+    ];
+
+    manContainer.innerHTML = mandatory.map(q => `
+        <div class="audit-item">
+            <p><strong>${q.q}</strong></p>
+            <textarea id="ans-${q.id}" oninput="autoSaveAuditee()">${audit.responses[q.id] || ''}</textarea>
+            <button type="button" class="attachment-btn" onclick="openEvidence('${q.id}')">+ Attach Evidence Sample / Link</button>
+        </div>
+    `).join('');
+
+    // ... AI questions follow same logic with id audit.standards[i] ...
+}
