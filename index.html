@@ -29,18 +29,17 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 15%;">Ref No.</th>
-                        <th style="width: 10%;">Title</th>
-                        <th style="width: 8%;">Period</th>
-                        <th style="width: 12%;">Date</th>
-                        <th style="width: 15%;">Dept / Function</th>
-                        <th style="width: 20%;">Auditee (Email)</th>
-                        <th style="width: 10%;">Status</th>
-                        <th style="width: 10%;">Actions</th>
+                        <th>Ref No.</th>
+                        <th>Title</th>
+                        <th>Period</th>
+                        <th>Scheduled Month</th>
+                        <th>Dept / Function</th>
+                        <th>Auditee Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="schedule-body">
-                    </tbody>
+                <tbody id="schedule-body"></tbody>
             </table>
         </div>
     </main>
@@ -49,25 +48,25 @@
         <div class="modal-content">
             <h3>Schedule New Audit</h3>
             <div class="form-grid">
-                <label>Audit Title</label>
-                <input type="text" id="title" placeholder="e.g. WASTE">
+                <label>Audit Title (e.g. WASTE)</label>
+                <input type="text" id="title">
                 
-                <label>Reporting Period (YYPP)</label>
-                <input type="text" id="period" placeholder="e.g. 2602">
+                <label>Reporting Period (YYPP - e.g. 2602)</label>
+                <input type="text" id="period">
                 
-                <label>Audit Date</label>
-                <input type="date" id="auditDate">
+                <label>Month & Year of Audit</label>
+                <input type="month" id="auditMonth">
                 
                 <label>Auditee Email</label>
-                <input type="email" id="email" placeholder="name@supertram.com">
+                <input type="email" id="email">
                 
                 <label>Department</label>
-                <input type="text" id="dept" placeholder="e.g. SHEQ">
+                <input type="text" id="dept">
                 
                 <label>Function</label>
-                <input type="text" id="function" placeholder="e.g. SLT">
+                <input type="text" id="function">
                 
-                <label>Audit Type</label>
+                <label>Type</label>
                 <select id="type">
                     <option value="Internal">Internal Audit</option>
                     <option value="External">External Audit</option>
