@@ -1,43 +1,37 @@
+// Add a version check to clear old, broken local data if needed
+const SAMS_VERSION = "1.2"; 
+
 let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
 
-// 1. DYNAMIC STATUS CALCULATOR
-function getLiveStatus(audit) {
-    // If manually closed or cancelled, respect that
-    if (audit.status === 'Closed' || audit.status === 'Cancelled') return audit.status;
-
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // JS months are 0-11
-
-    if (!audit.date) return 'Planned';
-
-    // date format from <input type="month"> is "YYYY-MM"
-    const [scheduledYear, scheduledMonth] = audit.date.split('-').map(Number);
-
-    // LOGIC CHECK
-    if (scheduledYear < currentYear || (scheduledYear === currentYear && scheduledMonth < currentMonth)) {
-        return 'Overdue';
-    } 
-    else if (scheduledYear === currentYear && scheduledMonth === currentMonth) {
-        return 'Open';
-    } 
-    else {
-        return 'Planned';
-    }
-}
-
-// 2. DASHBOARD RENDER
 function renderSchedule() {
     const body = document.getElementById('schedule-body');
     if (!body) return;
+
+    // Today's date for live comparison
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
 
     if (audits.length === 0) {
         body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No audits scheduled.</td></tr>';
     } else {
         body.innerHTML = audits.map((a, index) => {
-            // WE FORCE THE CALCULATION HERE
-            const currentStatus = getLiveStatus(a);
             
+            // --- LIVE CALCULATION (FORCED) ---
+            let liveStatus = "Planned"; 
+            
+            if (a.status === 'Closed' || a.status === 'Cancelled') {
+                liveStatus = a.status;
+            } else if (a.date) {
+                const [sYear, sMonth] = a.date.split('-').map(Number);
+                
+                if (sYear < currentYear || (sYear === currentYear && sMonth < currentMonth)) {
+                    liveStatus = "Overdue";
+                } else if (sYear === currentYear && sMonth === currentMonth) {
+                    liveStatus = "Open";
+                }
+            }
+
             return `
                 <tr>
                     <td>${a.ref}</td>
@@ -46,7 +40,7 @@ function renderSchedule() {
                     <td>${formatMonth(a.date)}</td>
                     <td>${a.dept || ''} / ${a.func || ''}</td>
                     <td>${a.email || ''}</td>
-                    <td><span class="status-pill ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
+                    <td><span class="status-pill ${liveStatus.toLowerCase()}">${liveStatus}</span></td>
                     <td>
                         <div style="display:flex; gap:8px;">
                             <a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a>
@@ -60,6 +54,7 @@ function renderSchedule() {
     updateStats();
 }
 
+// Helper to turn 2026-02 into "February 2026"
 function formatMonth(dateStr) {
     if (!dateStr) return 'TBC';
     const [year, month] = dateStr.split('-');
@@ -90,7 +85,7 @@ function createAudit() {
         dept: deptVal,
         func: funcVal,
         type: typeVal,
-        status: 'Planned', // Default base status
+        status: 'Planned', // This is just a placeholder; renderSchedule calculates the live one
         responses: {},
         lastUpdated: new Date().toISOString()
     };
@@ -110,15 +105,31 @@ function deleteAudit(index) {
 }
 
 function updateStats() {
-    const totalEl = document.getElementById('count-total');
-    if(!totalEl) return;
-    
-    totalEl.innerText = audits.length;
-    // Stats also need to use the live calculation
-    document.getElementById('count-planned').innerText = audits.filter(a => getLiveStatus(a) === 'Planned').length;
-    document.getElementById('count-open').innerText = audits.filter(a => getLiveStatus(a) === 'Open').length;
-    // Assuming Closed is a manual flag we set later
-    document.getElementById('count-closed').innerText = audits.filter(a => a.status === 'Closed').length;
+    // We re-calculate stats based on the same logic used in the table
+    const now = new Date();
+    const cy = now.getFullYear();
+    const cm = now.getMonth() + 1;
+
+    const total = audits.length;
+    let planned = 0;
+    let open = 0;
+    let closed = 0;
+
+    audits.forEach(a => {
+        if (a.status === 'Closed') { closed++; }
+        else if (a.date) {
+            const [sy, sm] = a.date.split('-').map(Number);
+            if (sy === cy && sm === cm) open++;
+            else if (sy > cy || (sy === cy && sm > cm)) planned++;
+        } else {
+            planned++;
+        }
+    });
+
+    if(document.getElementById('count-total')) document.getElementById('count-total').innerText = total;
+    if(document.getElementById('count-planned')) document.getElementById('count-planned').innerText = planned;
+    if(document.getElementById('count-open')) document.getElementById('count-open').innerText = open;
+    if(document.getElementById('count-closed')) document.getElementById('count-closed').innerText = closed;
 }
 
 window.onload = renderSchedule;
