@@ -2,47 +2,39 @@
     --tram-blue: #004c94;
     --tram-yellow: #ffcc00;
     --tram-purple: #9b26b6;
-    --light: #f9fbfc;
-    --dark: #212529;
+    --dark-text: #2d3436;
+    --bg-light: #f1f2f6;
 }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--light); color: var(--dark); margin: 0; line-height: 1.6; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-light); color: var(--dark-text); margin: 0; }
 
-/* Header & Nav */
-.header-container { background: var(--tram-blue); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 6px solid var(--tram-yellow); }
-.logo { font-size: 1.4rem; font-weight: bold; }
-.sub-logo { color: var(--tram-yellow); font-weight: normal; font-size: 0.9rem; margin-left: 5px; }
-nav ul { display: flex; gap: 20px; list-style: none; }
-nav a { color: white; text-decoration: none; font-size: 0.9rem; }
-nav a.active { border-bottom: 2px solid var(--tram-yellow); padding-bottom: 5px; }
+header { background: var(--tram-blue); color: white; padding: 1.2rem 5%; border-bottom: 5px solid var(--tram-yellow); }
+.header-container { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.6rem; font-weight: bold; }
+.sub-logo { font-weight: 300; margin-left: 10px; color: var(--tram-yellow); }
 
-/* Main UI */
-main { padding: 2rem 5%; max-width: 1200px; margin: auto; }
-.hero { background: linear-gradient(135deg, var(--tram-blue), #002d58); color: white; padding: 2.5rem; border-radius: 12px; margin-bottom: 2rem; }
-
-.card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 6px solid var(--tram-purple); }
-
-/* Tables */
-.table-container { background: white; border-radius: 10px; overflow: hidden; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+main { padding: 2rem 5%; }
+.table-container { background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
 table { width: 100%; border-collapse: collapse; }
-th { background: #eee; padding: 12px; text-align: left; }
-td { padding: 12px; border-top: 1px solid #ddd; }
+th { background: var(--tram-blue); color: white; padding: 15px; text-align: left; }
+td { padding: 15px; border-bottom: 1px solid #eee; }
 
-/* Audit & Report Elements */
-.audit-item { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid var(--tram-blue); }
-textarea { width: 100%; height: 100px; margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; }
-input[type="text"], input[type="date"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; }
+.status-pill { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+.planned { background: #dfe6e9; color: #636e72; }
+.open { background: #fab1a0; color: #d63031; }
 
-.btn { padding: 12px 25px; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; display: inline-block; text-decoration: none; }
+.btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
 .primary-btn { background: var(--tram-blue); color: white; }
-.secondary-btn { background: #eee; color: var(--dark); }
+.purple-btn { background: var(--tram-purple); color: white; }
+.secondary-btn { background: #ddd; }
 
-.badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; background: #ddd; }
-.pending { background: #fff3cd; color: #856404; }
+.workflow-stepper { display: flex; background: white; padding: 1rem; justify-content: space-around; border-bottom: 2px solid #ddd; }
+.step { font-weight: bold; color: #ccc; }
+.step.active { color: var(--tram-blue); border-bottom: 2px solid var(--tram-blue); }
 
-/* Print Logic */
-@media print {
-    .no-print, header, footer { display: none !important; }
-    main { padding: 0; }
-    body { background: white; }
-}
+.modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+.modal-content { background: white; padding: 2rem; border-radius: 12px; width: 500px; }
+.form-grid input, .form-grid select { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 6px; }
+
+.audit-item { background: white; padding: 1.5rem; margin-bottom: 1rem; border-left: 5px solid var(--tram-blue); border-radius: 6px; }
+textarea { width: 100%; height: 80px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
