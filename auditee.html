@@ -6,32 +6,34 @@
     <title>SAMS v1 | Auditee Response Portal</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body onload="loadAuditeeTask()">
-    <div class="auditee-header">
-        <div class="logo">SUPERTRAM <span>Compliance Portal</span></div>
-        <p id="task-ref" class="ref-banner">ST0096/LOADING/2026</p>
-    </div>
+<body class="auditee-body" onload="loadAuditeeTask()">
+    <header class="auditee-nav">
+        <div class="header-container">
+            <div class="logo">SUPERTRAM <span class="sub-logo">Compliance Portal</span></div>
+            <div id="task-ref" class="ref-tag">ST0096/LOADING/2026</div>
+        </div>
+    </header>
 
     <main>
-        <div id="save-msg" class="save-banner" style="display:none;">✔️ Progress Auto-Saved</div>
+        <div id="save-msg" class="save-banner" style="display:none;">✔️ Progress Auto-Saved to Device</div>
         
-        <div class="instruction-card">
-            <h3>Action Required</h3>
-            <p>Please answer the questions below. For questions requiring evidence, use the <strong>"Attach Evidence"</strong> button to provide a document reference or a cloud link (SharePoint/OneDrive).</p>
-        </div>
+        <section class="instruction-card">
+            <h3>Action Required: Internal Audit Response</h3>
+            <p>Please complete all sections. Use the <strong>"Attach Evidence"</strong> button to provide SharePoint links, document references, or photo IDs for the auditor to verify.</p>
+        </section>
 
         <form id="questionnaire-form">
             <div id="mandatory-section">
-                <h2 class="section-title">Step 1: Mandatory SHEQ Compliance</h2>
+                <h2 class="section-title">Step 1: Core Compliance</h2>
                 </div>
 
             <div id="ai-section">
-                <h2 class="section-title">Step 2: AI-Generated Process Assessment</h2>
+                <h2 class="section-title">Step 2: Process Specific Assessment</h2>
                 </div>
 
             <div class="submission-footer">
+                <button type="button" onclick="saveProgressManual()" class="btn secondary-btn">Save Progress</button>
                 <button type="button" onclick="submitTask()" class="btn primary-btn">Finalise & Submit to Auditor</button>
-                <p><small>Note: All responses are saved locally until you finalise.</small></p>
             </div>
         </form>
     </main>
@@ -40,64 +42,48 @@
         <div class="modal-content">
             <h3>Attach Evidence Sample</h3>
             <div class="form-grid">
-                <label>Evidence Type:</label>
+                <label>Evidence Category:</label>
                 <select id="ev-type">
-                    <option value="Doc">Policy/Procedure Doc</option>
-                    <option value="Photo">On-site Photograph</option>
-                    <option value="Record">Training/Maintenance Record</option>
-                    <option value="Link">SharePoint/OneDrive Link</option>
+                    <option value="Link">SharePoint / Cloud Link</option>
+                    <option value="Doc">Procedure Reference (e.g. SOP-01)</option>
+                    <option value="Photo">Photograph ID</option>
+                    <option value="Record">Training / Maintenance Log</option>
                 </select>
-                <label>Reference / Link:</label>
-                <input type="text" id="ev-ref" placeholder="e.g. ST/SHEQ/01 Rev 4 or http://sharepoint/doc">
-                <label>Brief Description:</label>
+                <label>Reference or URL:</label>
+                <input type="text" id="ev-ref" placeholder="Paste link or type Doc ID here...">
+                <label>Notes for Auditor:</label>
                 <textarea id="ev-desc" style="height:60px;"></textarea>
             </div>
             <div class="modal-btns">
                 <button onclick="closeEvidence()" class="btn secondary-btn">Cancel</button>
-                <button onclick="confirmEvidence()" class="btn purple-btn">Attach to Question</button>
+                <button onclick="confirmEvidence()" class="btn purple-btn">Attach Evidence</button>
             </div>
         </div>
     </div>
 
     <script src="app.js"></script>
     <script>
+        // Local UI helper for Modal
         let currentTargetId = null;
-
-        function loadAuditeeTask() {
-            const params = new URLSearchParams(window.location.search);
-            const ref = params.get('ref');
-            const data = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
-            const audit = data.find(a => a.ref === ref);
-
-            if (!audit) {
-                document.body.innerHTML = "<div class='card'><h2>Error: Invalid Audit Link</h2><p>Please contact the SHEQ Auditor for a valid ST0096 reference.</p></div>";
-                return;
-            }
-
-            document.getElementById('task-ref').innerText = audit.ref;
-            renderAuditeeQuestions(audit);
-        }
-
         function openEvidence(id) {
             currentTargetId = id;
             document.getElementById('evidence-modal').style.display = 'flex';
         }
-
         function closeEvidence() {
             document.getElementById('evidence-modal').style.display = 'none';
         }
-
         function confirmEvidence() {
             const ref = document.getElementById('ev-ref').value;
             const desc = document.getElementById('ev-desc').value;
             const type = document.getElementById('ev-type').value;
+            if(!ref) return alert("Please provide a reference or link.");
             
-            const attachmentHtml = `<div class="attachment-pill">📎 ${type}: ${ref}</div>`;
             const noteArea = document.getElementById(`ans-${currentTargetId}`);
-            noteArea.value += `\n[ATTACHMENT] ${type}: ${ref} - ${desc}`;
+            const timestamp = new Date().toLocaleTimeString();
+            noteArea.value += `\n[EVIDENCE ${timestamp}] ${type}: ${ref} (${desc})`;
             
             closeEvidence();
-            autoSaveAuditee(); // Triggers save to LocalStorage/GitHub logic
+            autoSaveAuditee();
         }
     </script>
 </body>
