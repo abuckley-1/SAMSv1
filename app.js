@@ -2,6 +2,7 @@ let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
 
 // 1. DYNAMIC STATUS CALCULATOR
 function getLiveStatus(audit) {
+    // If manually closed or cancelled, respect that
     if (audit.status === 'Closed' || audit.status === 'Cancelled') return audit.status;
 
     const now = new Date();
@@ -10,17 +11,16 @@ function getLiveStatus(audit) {
 
     if (!audit.date) return 'Planned';
 
+    // date format from <input type="month"> is "YYYY-MM"
     const [scheduledYear, scheduledMonth] = audit.date.split('-').map(Number);
 
-    // Logic: If the scheduled month/year is in the past
+    // LOGIC CHECK
     if (scheduledYear < currentYear || (scheduledYear === currentYear && scheduledMonth < currentMonth)) {
         return 'Overdue';
     } 
-    // Logic: If we are currently in the scheduled month
     else if (scheduledYear === currentYear && scheduledMonth === currentMonth) {
         return 'Open';
     } 
-    // Logic: Future audits
     else {
         return 'Planned';
     }
@@ -35,8 +35,8 @@ function renderSchedule() {
         body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No audits scheduled.</td></tr>';
     } else {
         body.innerHTML = audits.map((a, index) => {
-            // Calculate live status on the fly
-            const liveStatus = getLiveStatus(a);
+            // WE FORCE THE CALCULATION HERE
+            const currentStatus = getLiveStatus(a);
             
             return `
                 <tr>
@@ -46,7 +46,7 @@ function renderSchedule() {
                     <td>${formatMonth(a.date)}</td>
                     <td>${a.dept || ''} / ${a.func || ''}</td>
                     <td>${a.email || ''}</td>
-                    <td><span class="status-pill ${liveStatus.toLowerCase()}">${liveStatus}</span></td>
+                    <td><span class="status-pill ${currentStatus.toLowerCase()}">${currentStatus}</span></td>
                     <td>
                         <div style="display:flex; gap:8px;">
                             <a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a>
@@ -90,7 +90,7 @@ function createAudit() {
         dept: deptVal,
         func: funcVal,
         type: typeVal,
-        status: 'Planned', // Initial state, renderer will adjust to 'Open' if date matches
+        status: 'Planned', // Default base status
         responses: {},
         lastUpdated: new Date().toISOString()
     };
@@ -113,10 +113,11 @@ function updateStats() {
     const totalEl = document.getElementById('count-total');
     if(!totalEl) return;
     
-    // Stats also use the live calculation
     totalEl.innerText = audits.length;
+    // Stats also need to use the live calculation
     document.getElementById('count-planned').innerText = audits.filter(a => getLiveStatus(a) === 'Planned').length;
     document.getElementById('count-open').innerText = audits.filter(a => getLiveStatus(a) === 'Open').length;
+    // Assuming Closed is a manual flag we set later
     document.getElementById('count-closed').innerText = audits.filter(a => a.status === 'Closed').length;
 }
 
