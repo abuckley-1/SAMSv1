@@ -2,42 +2,35 @@
     --tram-blue: #004c94;
     --tram-yellow: #ffcc00;
     --tram-purple: #9b26b6;
-    --bg-light: #f4f7f9;
     --white: #ffffff;
-    --text: #2d3436;
+    --bg: #f4f7f9;
 }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-light); color: var(--text); margin: 0; line-height: 1.6; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; }
 
-/* Header Branding */
-header { background: var(--tram-blue); color: var(--white); padding: 1rem 5%; border-bottom: 5px solid var(--tram-yellow); }
-.header-container { display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 1.5rem; font-weight: bold; }
+.header-container { background: var(--tram-blue); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--tram-yellow); }
 .sub-logo { color: var(--tram-yellow); font-weight: 300; margin-left: 10px; }
-.ref-tag { background: var(--tram-yellow); color: black; padding: 5px 15px; border-radius: 4px; font-weight: bold; }
 
-/* Main UI Elements */
-main { padding: 2rem 5%; max-width: 1000px; margin: auto; }
-.card, .instruction-card, .audit-item { background: var(--white); padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-.audit-item { border-left: 6px solid var(--tram-blue); }
-.section-title { color: var(--tram-blue); border-bottom: 2px solid var(--tram-yellow); padding-bottom: 10px; margin: 40px 0 20px; }
+main { padding: 2rem 5%; }
+.stats-bar { display: flex; gap: 20px; margin-bottom: 2rem; }
+.stat { background: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-/* Form Controls */
-textarea { width: 100%; height: 100px; padding: 12px; border: 1px solid #dfe6e9; border-radius: 6px; box-sizing: border-box; font-family: inherit; margin-top: 10px; }
-input[type="text"], input[type="email"], select { width: 100%; padding: 12px; border: 1px solid #dfe6e9; border-radius: 6px; box-sizing: border-box; }
+.table-container { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f8f9fa; padding: 15px; text-align: left; border-bottom: 2px solid #eee; }
+td { padding: 15px; border-bottom: 1px solid #eee; }
+
+.status-pill { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+.planned { background: #dfe6e9; color: #636e72; }
 
 /* Buttons */
-.btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+.btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 .primary-btn { background: var(--tram-blue); color: white; }
-.secondary-btn { background: #dfe6e9; color: var(--text); }
 .purple-btn { background: var(--tram-purple); color: white; }
-.attachment-btn { background: #f8f9fa; border: 1px dashed var(--tram-blue); color: var(--tram-blue); padding: 8px; width: 100%; margin-top: 10px; border-radius: 4px; }
-.attachment-btn:hover { background: #e9ecef; }
+.secondary-btn { background: #ddd; }
 
-/* Modal */
-.modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 1000; }
-.modal-content { background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; }
-.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-
-/* Banners */
-.save-banner { position: fixed; top: 20px; right: 20px; background: #55efc4; color: #00b894; padding: 10px 20px; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+/* Modal Logic */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: white; padding: 2.5rem; border-radius: 15px; width: 500px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+.form-grid input, .form-grid select { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+.modal-btns { display: flex; gap: 10px; margin-top: 10px; }
