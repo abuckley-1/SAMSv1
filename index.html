@@ -30,16 +30,16 @@
                 <thead>
                     <tr>
                         <th>Ref No.</th>
-                        <th>Audit Title</th>
+                        <th>Title</th>
+                        <th>Period</th>
+                        <th>Date</th>
                         <th>Dept / Function</th>
-                        <th>Auditee (Email)</th>
-                        <th>Type</th>
+                        <th>Auditee</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="schedule-body">
-                    </tbody>
+                <tbody id="schedule-body"></tbody>
             </table>
         </div>
     </main>
@@ -49,6 +49,8 @@
             <h3>Schedule New Audit</h3>
             <div class="form-grid">
                 <input type="text" id="title" placeholder="Audit Title (e.g., WASTE)">
+                <input type="text" id="period" placeholder="Reporting Period (e.g., 2602)">
+                <input type="date" id="auditDate">
                 <input type="email" id="email" placeholder="Auditee Email">
                 <input type="text" id="dept" placeholder="Department">
                 <input type="text" id="function" placeholder="Function">
