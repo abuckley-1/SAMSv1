@@ -38,3 +38,51 @@ td { padding: 15px; border-bottom: 1px solid #eee; }
 
 .audit-item { background: white; padding: 1.5rem; margin-bottom: 1rem; border-left: 5px solid var(--tram-blue); border-radius: 6px; }
 textarea { width: 100%; height: 80px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
+
+.ref-banner {
+    background: var(--tram-yellow);
+    color: black;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.section-title {
+    color: var(--tram-blue);
+    border-bottom: 2px solid var(--tram-yellow);
+    padding-bottom: 10px;
+    margin-top: 30px;
+}
+
+.attachment-btn {
+    background: #f1f2f6;
+    border: 1px dashed var(--tram-blue);
+    color: var(--tram-blue);
+    padding: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.attachment-btn:hover { background: #e0e0e0; }
+
+.attachment-pill {
+    background: #d1d8e0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.submission-footer {
+    background: white;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 5px solid var(--tram-purple);
+    text-align: center;
+}
