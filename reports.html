@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAMS v1 | Audit Reporting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="no-print">
+        <div class="header-container">
+            <div class="logo">SUPERTRAM <span class="sub-logo">Report Generator</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Dashboard</a></li>
+                    <li><a href="reports.html" class="active">Reports</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="report-printable">
+        <div class="report-header">
+            <h1>Audit Report: Integrated SHEQ Management</h1>
+            <p>South Yorkshire Supertram - Confidential</p>
+        </div>
+
+        <section class="report-section">
+            <h3>1. Administrative Details</h3>
+            <div class="input-grid">
+                <input type="text" placeholder="Auditor Name" id="auditor">
+                <input type="date" id="auditDate">
+                <input type="text" placeholder="Department/Area" id="dept">
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h3>2. Meeting Minutes</h3>
+            <textarea placeholder="Opening Meeting Notes (Attendance, Scope confirmation, Safety brief)..." id="openMeeting"></textarea>
+            <textarea placeholder="Closing Meeting Notes (Summary of findings, Agreement on dates)..." id="closeMeeting"></textarea>
+        </section>
+
+        <section class="report-section">
+            <h3>3. Sampling & Evidence</h3>
+            <div id="evidence-summary">
+                <p class="placeholder-text">Complete the field audit to populate evidence sampling...</p>
+            </div>
+        </section>
+
+        <section class="report-section">
+            <h3>4. Findings & Non-Conformances</h3>
+            <div class="finding-box">
+                <label>Major Non-Conformances:</label>
+                <textarea id="majorNC"></textarea>
+                <label>Opportunities for Improvement (OFI):</label>
+                <textarea id="ofis"></textarea>
+            </div>
+        </section>
+
+        <div class="no-print">
+            <button class="btn primary-btn" onclick="window.print()">Print to PDF / Formal Issue</button>
+        </div>
+    </main>
+</body>
+</html>
