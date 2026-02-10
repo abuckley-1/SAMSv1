@@ -2,49 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SAMS v1 | Supertram Audit Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMS v1 | Supertram Audit Management System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="logo">SUPERTRAM <span>SAMS v1</span></div>
-        <nav>
-            <ul>
-                <li><a href="index.html" class="active">Dashboard</a></li>
-                <li><a href="audit.html">New Audit</a></li>
-                <li><a href="legislation.html">Legislation</a></li>
-            </ul>
-        </nav>
+        <div class="header-container">
+            <div class="logo">SUPERTRAM <span class="sub-logo">SAMS v1</span></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Dashboard</a></li>
+                    <li><a href="audit.html">New Audit</a></li>
+                    <li><a href="legislation.html">Legislation</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
         <section class="hero">
-            <h1>SHEQ Compliance Dashboard</h1>
-            <p>Integrated Management System for ISO & RM3 Rail Standards</p>
+            <h1>Integrated Management System</h1>
+            <p>Auditing compliance for ISO 9001, 14001, 45001 & RM3 Maturity.</p>
         </section>
 
-        <div class="grid">
-            <div class="card">
-                <h3>ISO 45001:2018</h3>
-                <div class="progress-container"><div class="progress-bar" style="width: 94%;">94%</div></div>
-                <p>Health & Safety Performance</p>
+        <section class="dashboard-grid">
+            <div class="card stat-card">
+                <h3>System Health</h3>
+                <div class="gauge-container">
+                    <div class="gauge"><div class="gauge-fill" style="width: 88%;">88%</div></div>
+                </div>
+                <p>Overall Compliance Score</p>
             </div>
-            <div class="card">
-                <h3>RM3 Maturity</h3>
-                <div class="status-box level-3">Level 3: Standardised</div>
-                <p>ORR Risk Management Maturity</p>
+
+            <div class="card rm3-card">
+                <h3>RM3 Rail Maturity</h3>
+                <div class="maturity-badge">Level 3</div>
+                <p>Status: <strong>Standardised</strong></p>
+                <small>Goal: Level 5 (Excellent)</small>
             </div>
-            <div class="card">
-                <h3>ISO 14001:2015</h3>
-                <div class="progress-container"><div class="progress-bar" style="width: 82%;">82%</div></div>
-                <p>Environmental Compliance</p>
+
+            <div class="card list-card">
+                <h3>Upcoming Audits</h3>
+                <ul>
+                    <li><strong>ISO 45001:</strong> Site Safety - 15 Feb</li>
+                    <li><strong>RM3:</strong> Risk Control - 22 Feb</li>
+                    <li><strong>ISO 14001:</strong> Waste Management - 02 Mar</li>
+                </ul>
             </div>
-            <div class="card">
-                <h3>ISO 9001:2015</h3>
-                <div class="progress-container"><div class="progress-bar" style="width: 89%;">89%</div></div>
-                <p>Quality Management</p>
-            </div>
-        </div>
+        </section>
     </main>
+
+    <footer>
+        <p>&copy; 2026 Supertram | SHEQ Compliance Repository</p>
+    </footer>
 </body>
 </html>
