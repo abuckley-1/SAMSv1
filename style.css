@@ -6,7 +6,7 @@
     --bg: #f4f7f9;
 }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
 
 .header-container { background: var(--tram-blue); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--tram-yellow); }
 .sub-logo { color: var(--tram-yellow); font-weight: 300; margin-left: 10px; }
