@@ -1,35 +1,188 @@
+/* SAMS v1 - Supertram Audit Management System */
 :root {
     --tram-blue: #004c94;
     --tram-yellow: #ffcc00;
     --tram-purple: #9b26b6;
     --white: #ffffff;
     --bg: #f4f7f9;
+    
+    /* Status Colors */
+    --status-planned-bg: #dfe6e9;
+    --status-planned-text: #636e72;
+    --status-open-bg: #55efc4;
+    --status-open-text: #00b894;
+    --status-overdue-bg: #ff7675;
+    --status-overdue-text: #d63031;
+    --status-closed-bg: #81ecec;
+    --status-closed-text: #00838f;
 }
 
-body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; color: #333; }
+body { 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    background: var(--bg); 
+    margin: 0; 
+    color: #333; 
+}
 
-.header-container { background: var(--tram-blue); color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--tram-yellow); }
+/* Header & Branding */
+.header-container { 
+    background: var(--tram-blue); 
+    color: white; 
+    padding: 1rem 5%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 5px solid var(--tram-yellow); 
+}
+
+.logo { font-size: 1.2rem; font-weight: bold; }
 .sub-logo { color: var(--tram-yellow); font-weight: 300; margin-left: 10px; }
 
+/* Dashboard Layout */
 main { padding: 2rem 5%; }
-.stats-bar { display: flex; gap: 20px; margin-bottom: 2rem; }
-.stat { background: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-width: 100px; text-align: center; }
 
-.table-container { background: white; border-radius: 10px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #eee; font-size: 0.85rem; color: #666; }
-td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.8rem; }
+.stats-bar { 
+    display: flex; 
+    gap: 20px; 
+    margin-bottom: 2rem; 
+}
 
-.status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; background: #dfe6e9; color: #636e72; }
-.small-link { color: var(--tram-blue); text-decoration: none; font-weight: bold; border: 1px solid var(--tram-blue); padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; }
-.delete-btn { background: #fff; border: 1px solid #fab1a0; color: #d63031; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+.stat { 
+    background: white; 
+    padding: 15px 25px; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+    min-width: 120px; 
+    text-align: center; 
+}
 
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
-.modal-content { background: white; padding: 2rem; border-radius: 15px; width: 450px; }
-.form-grid label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; color: var(--tram-blue); }
-.form-grid input, .form-grid select { width: 100%; padding: 10px; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-.modal-btns { display: flex; gap: 10px; }
+/* Table Design */
+.table-container { 
+    background: white; 
+    border-radius: 10px; 
+    overflow-x: auto; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+}
 
-.btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 1000px; 
+}
+
+th { 
+    background: #f8f9fa; 
+    padding: 15px; 
+    text-align: left; 
+    border-bottom: 2px solid #eee; 
+    font-size: 0.85rem; 
+    color: #666; 
+}
+
+td { 
+    padding: 15px; 
+    border-bottom: 1px solid #eee; 
+    font-size: 0.8rem; 
+    vertical-align: middle; 
+}
+
+/* Dynamic Status Pills */
+.status-pill { 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 0.7rem; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    display: inline-block;
+}
+
+.planned { background: var(--status-planned-bg); color: var(--status-planned-text); }
+.open { background: var(--status-open-bg); color: var(--status-open-text); }
+.overdue { background: var(--status-overdue-bg); color: var(--status-overdue-text); }
+.closed { background: var(--status-closed-bg); color: var(--status-closed-text); }
+
+/* Buttons & Actions */
+.btn { 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: 0.2s;
+}
+
 .primary-btn { background: var(--tram-blue); color: white; }
-.secondary-btn { background: #ddd; }
+.purple-btn { background: var(--tram-purple); color: white; }
+.secondary-btn { background: #ddd; color: #333; }
+
+.small-link { 
+    color: var(--tram-blue); 
+    text-decoration: none; 
+    font-weight: bold; 
+    border: 1px solid var(--tram-blue); 
+    padding: 6px 12px; 
+    border-radius: 4px; 
+    font-size: 0.75rem; 
+}
+
+.small-link:hover { background: var(--tram-blue); color: white; }
+
+.delete-btn { 
+    background: #fff; 
+    border: 1px solid #fab1a0; 
+    color: #d63031; 
+    cursor: pointer; 
+    padding: 5px 10px; 
+    border-radius: 4px; 
+}
+
+.delete-btn:hover { background: #ff7675; color: white; }
+
+/* Modal Design */
+.modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.6); 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 1000; 
+}
+
+.modal-content { 
+    background: white; 
+    padding: 2rem; 
+    border-radius: 15px; 
+    width: 480px; 
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+.form-grid label { 
+    display: block; 
+    font-size: 0.75rem; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+    color: var(--tram-blue); 
+    margin-top: 10px;
+}
+
+.form-grid input, .form-grid select { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 5px; 
+    border: 1px solid #ddd; 
+    border-radius: 5px; 
+    box-sizing: border-box; 
+    font-size: 0.9rem;
+}
+
+.modal-btns { 
+    display: flex; 
+    gap: 12px; 
+    margin-top: 25px; 
+}
