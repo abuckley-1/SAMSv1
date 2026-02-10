@@ -11,10 +11,10 @@ function renderSchedule() {
             <tr>
                 <td>${a.ref}</td>
                 <td><strong>${a.title}</strong></td>
-                <td>${a.period}</td>
+                <td>${a.period || '---'}</td>
                 <td>${formatMonth(a.date)}</td>
-                <td>${a.dept} / ${a.func}</td>
-                <td>${a.email}</td>
+                <td>${a.dept || ''} / ${a.func || ''}</td>
+                <td>${a.email || ''}</td>
                 <td><span class="status-pill ${a.status.toLowerCase()}">${a.status}</span></td>
                 <td>
                     <div style="display:flex; gap:8px;">
@@ -28,56 +28,68 @@ function renderSchedule() {
     updateStats();
 }
 
+// Formats "2026-02" into "February 2026"
 function formatMonth(dateStr) {
     if (!dateStr) return 'TBC';
-    const [year, month] = dateStr.split('-');
-    const date = new Date(year, month - 1);
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    try {
+        const [year, month] = dateStr.split('-');
+        const date = new Date(year, month - 1);
+        return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    } catch (e) {
+        return dateStr; // Fallback if format is weird
+    }
 }
 
 function createAudit() {
-    const titleVal = document.getElementById('title').value.toUpperCase();
-    const periodVal = document.getElementById('period').value;
-    const monthVal = document.getElementById('auditMonth').value; // Stores as YYYY-MM
-    const emailVal = document.getElementById('email').value;
-    const deptVal = document.getElementById('dept').value;
-    const funcVal = document.getElementById('function').value;
-    const typeVal = document.getElementById('type').value;
+    try {
+        const titleVal = document.getElementById('title').value.toUpperCase();
+        const periodVal = document.getElementById('period').value;
+        const monthVal = document.getElementById('auditMonth').value; 
+        const emailVal = document.getElementById('email').value;
+        const deptVal = document.getElementById('dept').value;
+        const funcVal = document.getElementById('function').value;
+        const typeVal = document.getElementById('type').value;
 
-    if (!titleVal || !periodVal || !emailVal) {
-        alert("Required: Title, Period, and Email.");
-        return;
+        if (!titleVal || !periodVal) {
+            alert("Please provide at least an Audit Title and Reporting Period.");
+            return;
+        }
+
+        const ref = `ST0096/${titleVal}/${periodVal}`;
+
+        const newAudit = {
+            ref: ref,
+            title: titleVal,
+            period: periodVal,
+            date: monthVal,
+            email: emailVal,
+            dept: deptVal,
+            func: funcVal,
+            type: typeVal,
+            status: 'Planned',
+            responses: {},
+            lastUpdated: new Date().toISOString()
+        };
+
+        audits.push(newAudit);
+        localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
+        
+        document.getElementById('schedule-modal').style.display = 'none';
+        renderSchedule();
+        
+        // Reset inputs
+        ['title', 'period', 'auditMonth', 'email', 'dept', 'function'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.value = '';
+        });
+    } catch (err) {
+        console.error("Audit Creation Failed:", err);
+        alert("An error occurred. Please check all fields are filled.");
     }
-
-    const ref = `ST0096/${titleVal}/${periodVal}`;
-
-    const newAudit = {
-        ref: ref,
-        title: titleVal,
-        period: periodVal,
-        date: monthVal,
-        email: emailVal,
-        dept: deptVal,
-        func: funcVal,
-        type: typeVal,
-        status: 'Planned',
-        responses: {},
-        lastUpdated: new Date().toISOString()
-    };
-
-    audits.push(newAudit);
-    localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
-    
-    document.getElementById('schedule-modal').style.display = 'none';
-    renderSchedule();
-    
-    ['title', 'period', 'auditMonth', 'email', 'dept', 'function'].forEach(id => {
-        document.getElementById(id).value = '';
-    });
 }
 
 function deleteAudit(index) {
-    if(confirm("Confirm: Delete this record?")) {
+    if(confirm("Delete this record?")) {
         audits.splice(index, 1);
         localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
         renderSchedule();
@@ -86,9 +98,10 @@ function deleteAudit(index) {
 
 function updateStats() {
     const totalEl = document.getElementById('count-total');
-    if(!totalEl) return;
-    totalEl.innerText = audits.length;
-    document.getElementById('count-planned').innerText = audits.filter(a => a.status === 'Planned').length;
+    if(totalEl) totalEl.innerText = audits.length;
+    
+    const plannedEl = document.getElementById('count-planned');
+    if(plannedEl) plannedEl.innerText = audits.filter(a => a.status === 'Planned').length;
 }
 
 window.onload = renderSchedule;
