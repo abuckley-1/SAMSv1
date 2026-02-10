@@ -6,66 +6,63 @@ function checkAdminPassword(action, index = null) {
     if (entry === ADMIN_PASS) {
         if (action === 'create') document.getElementById('schedule-modal').style.display = 'flex';
         if (action === 'delete') executeDelete(index);
-        if (action === 'issue-initial') issueQuestionnaire(index, 'initial');
-        if (action === 'issue-followup') issueQuestionnaire(index, 'followup');
+        if (action === 'issue-initial') issueQuestionnaire(index);
     } else { alert("Access Denied."); }
 }
 
-function issueQuestionnaire(index, type) {
+function issueQuestionnaire(index) {
     const audit = audits[index];
-    const now = new Date();
     const expiry = new Date();
-    expiry.setDate(now.getDate() + 14); // 2 week window
+    expiry.setDate(expiry.getDate() + 14);
+
+    const standards = [
+        { name: "ISO 9001", questions: ["Process control measures", "Customer requirement integration", "Resource management", "Documented information control", "Monitoring and measurement"] },
+        { name: "ISO 14001", questions: ["Waste stream management", "Environmental aspect identification", "Emergency preparedness", "Spill control measures", "Pollution prevention"] },
+        { name: "ISO 45001", questions: ["Hazard identification", "Worker consultation", "PPE compliance", "Incident reporting culture", "Occupational health monitoring"] },
+        { name: "RM3", questions: ["Safety culture leadership", "Risk management capability", "Asset management integrity", "Audit and review feedback", "Competence management systems"] }
+    ];
+
+    let aiQuestions = [];
+    standards.forEach(std => {
+        std.questions.forEach(q => {
+            aiQuestions.push({
+                text: `Regarding ${audit.title}: How do you demonstrate compliance with ${std.name} in relation to ${q}?`,
+                standard: std.name
+            });
+        });
+    });
 
     audit.workflow = audit.workflow || {};
-    audit.workflow[type] = {
-        issuedDate: now.toISOString(),
+    audit.workflow['initial'] = {
+        issuedDate: new Date().toISOString(),
         expiryDate: expiry.toISOString(),
         status: 'Issued',
-        responses: []
+        aiQuestions: aiQuestions,
+        responses: {}
     };
-
+    
+    audit.status = "OPEN";
     localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
-    alert(`${type.toUpperCase()} Questionnaire Issued to ${audit.email}. Link valid until ${expiry.toLocaleDateString()}`);
+    alert("Initial Questionnaire Issued. Link valid for 14 days.");
     renderSchedule();
 }
 
 function renderSchedule() {
     const body = document.getElementById('schedule-body');
     if (!body) return;
-
-    const now = new Date();
-    const curYear = now.getFullYear();
-    const curMonth = now.getMonth() + 1;
-
     body.innerHTML = audits.map((a, index) => {
-        let liveStatus = "Planned";
-        if (a.date) {
-            const [sY, sM] = a.date.split('-').map(Number);
-            if (sY < curYear || (sY === curYear && sM < curMonth)) liveStatus = "Overdue";
-            else if (sY === curYear && sM === curMonth) liveStatus = "Open";
-        }
-        if (a.status === 'Closed') liveStatus = "Closed";
-
+        const statusClass = a.status ? a.status.toLowerCase() : 'planned';
         return `
             <tr>
-                <td><small>${a.ref}</small></td>
-                <td><strong>${a.title}</strong><br><small>${a.dept} / ${a.func}</small></td>
+                <td>${a.ref}</td>
+                <td><strong>${a.title}</strong><br>${a.dept} / ${a.func}</td>
                 <td>${formatMonth(a.date)}</td>
-                <td><span class="status-pill ${liveStatus.toLowerCase()}">${liveStatus}</span></td>
+                <td><span class="status-pill ${statusClass}">${a.status || 'PLANNED'}</span></td>
                 <td>
                     <div class="action-zone">
-                        <div class="action-group">
-                            <span>Initial:</span>
-                            <button onclick="checkAdminPassword('issue-initial', ${index})" class="action-btn">Issue Link</button>
-                            <a href="auditee.html?ref=${a.ref}&type=initial" class="action-btn view">View Form</a>
-                        </div>
-                        <div class="action-group">
-                            <span>Follow-up:</span>
-                            <button onclick="checkAdminPassword('issue-followup', ${index})" class="action-btn">Bespoke Setup</button>
-                            <a href="auditee.html?ref=${a.ref}&type=followup" class="action-btn view">View Form</a>
-                        </div>
-                        <button onclick="checkAdminPassword('delete', ${index})" class="delete-btn" style="margin-top:10px">🗑 Delete Audit</button>
+                        <button onclick="checkAdminPassword('issue-initial', ${index})" class="action-btn">Issue Initial Link</button>
+                        <a href="auditee.html?ref=${a.ref}" class="action-btn view">Open Portal</a>
+                        <button onclick="checkAdminPassword('delete', ${index})" class="delete-btn">🗑</button>
                     </div>
                 </td>
             </tr>
@@ -77,8 +74,6 @@ function renderSchedule() {
 function createAudit() {
     const titleVal = document.getElementById('title').value.toUpperCase();
     const periodVal = document.getElementById('period').value;
-    if (!titleVal || !periodVal) return alert("Missing Info");
-
     audits.push({
         ref: `ST0096/${titleVal}/${periodVal}`,
         title: titleVal,
@@ -87,27 +82,15 @@ function createAudit() {
         email: document.getElementById('email').value,
         dept: document.getElementById('dept').value,
         func: document.getElementById('function').value,
-        status: 'Planned',
-        workflow: {}
+        status: 'PLANNED'
     });
-
     localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
     document.getElementById('schedule-modal').style.display = 'none';
     renderSchedule();
 }
 
-function executeDelete(index) {
-    if(confirm("Delete permanently?")) { audits.splice(index, 1); localStorage.setItem('supertram_audit_data', JSON.stringify(audits)); renderSchedule(); }
-}
-
-function formatMonth(dateStr) {
-    if (!dateStr) return 'TBC';
-    const [y, m] = dateStr.split('-');
-    return new Date(y, m-1).toLocaleString('default', { month: 'long', year: 'numeric' });
-}
-
-function updateStats() {
-    if(document.getElementById('count-total')) document.getElementById('count-total').innerText = audits.length;
-}
+function formatMonth(d) { return d ? new Date(d).toLocaleString('default', {month:'long', year:'numeric'}) : 'TBC'; }
+function updateStats() { document.getElementById('count-total').innerText = audits.length; }
+function executeDelete(i) { if(confirm("Delete?")) { audits.splice(i, 1); localStorage.setItem('supertram_audit_data', JSON.stringify(audits)); renderSchedule(); } }
 
 window.onload = renderSchedule;
