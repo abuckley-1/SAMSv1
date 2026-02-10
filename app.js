@@ -1,49 +1,50 @@
-// --- DATABASE INITIALIZATION ---
 let audits = JSON.parse(localStorage.getItem('supertram_audit_data')) || [];
 
-// --- DASHBOARD RENDER ---
 function renderSchedule() {
     const body = document.getElementById('schedule-body');
     if (!body) return;
 
     if (audits.length === 0) {
-        body.innerHTML = '<tr><td colspan="7" style="text-align:center;">No audits scheduled. Click "+ Schedule Audit" to begin.</td></tr>';
+        body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No audits scheduled.</td></tr>';
     } else {
         body.innerHTML = audits.map(a => `
             <tr>
                 <td>${a.ref}</td>
                 <td><strong>${a.title}</strong></td>
+                <td>${a.period}</td>
+                <td>${a.date || 'TBC'}</td>
                 <td>${a.dept} / ${a.func}</td>
                 <td>${a.email}</td>
-                <td>${a.type}</td>
                 <td><span class="status-pill ${a.status.toLowerCase()}">${a.status}</span></td>
-                <td><a href="auditee.html?ref=${a.ref}" class="small-link">View Portal</a></td>
+                <td><a href="auditee.html?ref=${a.ref}" class="small-link">Manage</a></td>
             </tr>
         `).join('');
     }
     updateStats();
 }
 
-// --- CORE FUNCTIONS ---
 function createAudit() {
-    // Get values from the IDs in index.html
     const titleVal = document.getElementById('title').value.toUpperCase();
+    const periodVal = document.getElementById('period').value;
+    const dateVal = document.getElementById('auditDate').value;
     const emailVal = document.getElementById('email').value;
     const deptVal = document.getElementById('dept').value;
     const funcVal = document.getElementById('function').value;
     const typeVal = document.getElementById('type').value;
 
-    if (!titleVal || !emailVal) {
-        alert("Please enter at least a Title and Auditee Email.");
+    if (!titleVal || !periodVal || !emailVal) {
+        alert("Required: Title, Reporting Period (YYPP), and Auditee Email.");
         return;
     }
 
-    const year = new Date().getFullYear();
-    const ref = `ST0096/${titleVal}/${year}`;
+    // Ref now uses the Period (e.g., ST0096/WASTE/2602)
+    const ref = `ST0096/${titleVal}/${periodVal}`;
 
     const newAudit = {
         ref: ref,
         title: titleVal,
+        period: periodVal,
+        date: dateVal,
         email: emailVal,
         dept: deptVal,
         func: funcVal,
@@ -56,28 +57,22 @@ function createAudit() {
     audits.push(newAudit);
     localStorage.setItem('supertram_audit_data', JSON.stringify(audits));
     
-    // Close modal and refresh list
     document.getElementById('schedule-modal').style.display = 'none';
     renderSchedule();
     
-    // Reset form
-    document.getElementById('title').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('dept').value = '';
-    document.getElementById('function').value = '';
+    // Clear inputs
+    ['title', 'period', 'auditDate', 'email', 'dept', 'function'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
 }
 
 function updateStats() {
-    if(!document.getElementById('count-total')) return;
-    document.getElementById('count-total').innerText = audits.length;
+    const countTotal = document.getElementById('count-total');
+    if(!countTotal) return;
+    countTotal.innerText = audits.length;
     document.getElementById('count-planned').innerText = audits.filter(a => a.status === 'Planned').length;
     document.getElementById('count-open').innerText = audits.filter(a => a.status === 'Open').length;
     document.getElementById('count-closed').innerText = audits.filter(a => a.status === 'Closed').length;
 }
 
-function syncToCloud() {
-    alert("Cloud Sync initialized. This feature requires a GitHub Token to push data to abuckley-1/SAMSv1.");
-}
-
-// Initialize on load
 window.onload = renderSchedule;
