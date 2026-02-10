@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMS v1 | Supertram Audit Management System</title>
+    <title>SAMS v1 | Supertram SHEQ Portal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">SUPERTRAM <span class="sub-logo">SAMS v1</span></div>
+            <div class="logo">SUPERTRAM <span class="sub-logo">Audit Management</span></div>
             <nav>
                 <ul>
                     <li><a href="index.html" class="active">Dashboard</a></li>
                     <li><a href="audit.html">New Audit</a></li>
+                    <li><a href="reports.html">Reports</a></li>
                     <li><a href="legislation.html">Legislation</a></li>
                 </ul>
             </nav>
@@ -22,39 +23,50 @@
 
     <main>
         <section class="hero">
-            <h1>Integrated Management System</h1>
-            <p>Auditing compliance for ISO 9001, 14001, 45001 & RM3 Maturity.</p>
+            <h1>2026 SHEQ Audit Universe</h1>
+            <p>Integrated Compliance: ISO 9001, 14001, 45001 & RM3 Rail Maturity</p>
         </section>
 
-        <section class="dashboard-grid">
-            <div class="card stat-card">
-                <h3>System Health</h3>
-                <div class="gauge-container">
-                    <div class="gauge"><div class="gauge-fill" style="width: 88%;">88%</div></div>
-                </div>
-                <p>Overall Compliance Score</p>
+        <section class="schedule-section">
+            <h2>Annual Audit Schedule</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Audit Scope</th>
+                            <th>Standard</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>February</td>
+                            <td>Nunnery Depot - Infrastructure</td>
+                            <td>ISO 45001 / RM3</td>
+                            <td><span class="badge pending">Scheduled</span></td>
+                            <td><a href="audit.html" class="small-btn">Start</a></td>
+                        </tr>
+                        <tr>
+                            <td>April</td>
+                            <td>Rolling Stock Maintenance</td>
+                            <td>ISO 9001</td>
+                            <td><span class="badge">Planned</span></td>
+                            <td><a href="#" class="small-btn disabled">Notify</a></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </section>
 
+        <div class="dashboard-grid">
             <div class="card rm3-card">
                 <h3>RM3 Rail Maturity</h3>
-                <div class="maturity-badge">Level 3</div>
-                <p>Status: <strong>Standardised</strong></p>
-                <small>Goal: Level 5 (Excellent)</small>
+                <div class="maturity-badge">Level 3: Standardised</div>
+                <p>Targeting Level 4 (Predictable) by Q4 2026</p>
             </div>
-
-            <div class="card list-card">
-                <h3>Upcoming Audits</h3>
-                <ul>
-                    <li><strong>ISO 45001:</strong> Site Safety - 15 Feb</li>
-                    <li><strong>RM3:</strong> Risk Control - 22 Feb</li>
-                    <li><strong>ISO 14001:</strong> Waste Management - 02 Mar</li>
-                </ul>
-            </div>
-        </section>
+        </div>
     </main>
-
-    <footer>
-        <p>&copy; 2026 Supertram | SHEQ Compliance Repository</p>
-    </footer>
 </body>
 </html>
