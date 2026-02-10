@@ -1,29 +1,39 @@
-const criteriaData = {
+const checklists = {
     rm3: [
-        { id: "SP1", category: "Policy", title: "H&S Policy", text: "Is there a clear safety policy signed by the Board?" },
-        { id: "OC2", category: "Organising", title: "Responsibilities", text: "Are safety roles clearly defined in the SMS?" },
-        { id: "RCS2", category: "Risk Control", title: "Asset Management", text: "Is maintenance of trams/tracks aligned with safety limits?" },
-        { id: "OP2", category: "Competence", title: "Training", text: "Is the Competence Management System (CMS) audited annually?" }
+        { id: "SP1", q: "Is the H&S policy clearly communicated and visible across all depots?" },
+        { id: "OC2", q: "Are SHEQ roles and responsibilities defined in job descriptions?" },
+        { id: "RCS1", q: "Is there a formal process for identifying 'Significant Changes' under CSM-RA?" }
     ],
     iso45001: [
-        { id: "45-6.1", category: "Planning", title: "Hazard ID", text: "Are risk assessments updated for 'Change Management'?" }
+        { id: "Clause 5.2", q: "Does the OHS policy include a commitment to eliminate hazards?" }
+    ],
+    iso14001: [
+        { id: "Clause 6.1.2", q: "Have the environmental impacts of tram operations been quantified?" }
+    ],
+    iso9001: [
+        { id: "Clause 8.4", q: "Are track maintenance contractors being audited regularly?" }
     ]
 };
 
-function loadAudit(type) {
-    const container = document.getElementById('audit-list');
-    container.innerHTML = criteriaData[type].map(q => `
+function updateChecklist() {
+    const type = document.getElementById('auditType').value;
+    const container = document.getElementById('checklist-container');
+    const questions = checklists[type];
+
+    container.innerHTML = questions.map(item => `
         <div class="audit-item">
-            <h4>${q.id}: ${q.title}</h4>
-            <p>${q.text}</p>
+            <strong>${item.id}</strong>
+            <p>${item.q}</p>
             <select>
-                <option>Level 1: Ad-hoc</option>
-                <option>Level 2: Managed</option>
-                <option>Level 3: Standardised</option>
-                <option>Level 4: Predictable</option>
-                <option>Level 5: Excellent</option>
+                <option>Select Level...</option>
+                <option>Level 1 (Ad-hoc)</option>
+                <option>Level 2 (Managed)</option>
+                <option>Level 3 (Standardised)</option>
             </select>
-            <textarea placeholder="Evidence / Notes..."></textarea>
+            <textarea placeholder="Record evidence..."></textarea>
         </div>
     `).join('');
 }
+
+function submitAudit() { alert("Audit compiled and ready for review."); }
+window.onload = updateChecklist;
